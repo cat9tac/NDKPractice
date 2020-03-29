@@ -3,28 +3,53 @@ package com.example.ndkpractice;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "ndkpractice_MainActivity";
 
-    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
+    private Lib mLib;
+
+    // Used to load the 'nativte-lib' library on application startup.
+    private TextView tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mLib = new Lib();
+
         // Example of a call to a native method
-        TextView tv = findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
+        tv = findViewById(R.id.sample_text);
+        // tv.setText(stringFromJNI());
+        tv.setText(mLib.returnName());
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mLib.updateNum();
+                tv.setText("" + mLib.getNum1());
+            }
+        });
+        //printArray();
+
     }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
+    private void printArray() {
+        int[] arr = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        int len = arr.length;
+
+        for (int i = 0; i < len; i++) {
+            Log.d(TAG, " start " + arr[i]);
+        }
+        mLib.arrayProcess(arr);
+
+        for (int i = 0; i < len; i++) {
+            Log.d(TAG, "end " + arr[i]);
+        }
+    }
+
+
 }
